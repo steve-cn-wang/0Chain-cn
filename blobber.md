@@ -47,4 +47,4 @@ ec2 / vm / bare metal上已安装docker
 
 6. 重启docker-compose后，您就可以通过https访问blobber了。
 
-docker-compose restart
+        docker-compose restart
