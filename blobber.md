@@ -1,4 +1,5 @@
-Blobber on ec2 / vm / bare metal over https
+通过https在ec2/vm/bare metal上建立Blobber
+
 **Prerequisite**
 ec2 / vm / bare metal with docker installed
 Initial Setup
