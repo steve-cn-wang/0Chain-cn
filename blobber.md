@@ -16,7 +16,7 @@ ec2 / vm / bare metal上已安装docker
 
         $ docker network create --driver=bridge --subnet=198.18.0.0/15 --gateway=198.18.0.255 testnet0
 
-2. 根据您的config/0chain_blobber/validator.yaml和config/0chain_blobber/0chain_blobber.yaml 配置文件中更新block_worker的url
+2. 根据您的config/0chain_blobber/validator.yaml和config/0chain_blobber/0chain_blobber.yaml 配置文件中更新block_worker的url。
 例如：如果您想连接到five network，则设置：
 
         block_worker: https://five.devnet-0chain.net/dns
@@ -40,10 +40,11 @@ ec2 / vm / bare metal上已安装docker
 3. 用以下命令部署nginx和certbot
 
         docker-compose up -d
-4. Check certbot logs and see if certificate is generated. You will find "Congratulations! Your certificate and chain have been saved at: /etc/letsencrypt/live/<your_domain>/fullchain.pem" in the logs if the certificate is generated properly.
-docker logs -f https_certbot_1 
-Edit /conf.d/nginx.conf to uncomment required locations in config for port 80. Uncomment all lines in server config for port 443 and comment locations which are not required. Don't forget to reploce <your_domain> with your domain.
+4. 检查certbot日志，确认证书已生成。如果证书正确生成，您将会在日志文件中看到"Congratulations! Your certificate and chain have been saved at: /etc/letsencrypt/live/<your_domain>/fullchain.pem"。
+        
+        docker logs -f https_certbot_1 
+5. 编辑/conf.d/nginx.conf文件，将在80端口配置处required locations所在行的注释取消。将所有服务器配置443端口相关行的注释取消，并将不需要的位置内容所在行进行注释。请不要忘记用您实际的域名替换<your_domain>。
 
-Restart docker compose and you will be able to access blobbers over https.
+6. 重启docker-compose后，您就可以通过https访问blobber了。
 
 docker-compose restart
