@@ -1,42 +1,46 @@
-通过https在ec2/vm/bare metal上建立Blobber
+# 通过https在ec2/vm/bare metal上建立Blobber
 
-**Prerequisite**
-ec2 / vm / bare metal with docker installed
-Initial Setup
-Directory Setup for Blobbers
-In the git/blobber run the following command
+## 准备工作
+
+ec2 / vm / bare metal上已安装docker
+
+## 初始设置
+### 设置Blobbers目录
+在git/blobber中运行以下命令
+
+    $ ./docker.local/bin/blobber.init.setup.sh
+
+## 建立和启动节点
+
+1. 为每个节点的容器建立一个网络，名为testnet0，使容器之间可相互通信
+
+        $ docker network create --driver=bridge --subnet=198.18.0.0/15 --gateway=198.18.0.255 testnet0
+
+2. 根据您的config/0chain_blobber/validator.yaml和config/0chain_blobber/0chain_blobber.yaml 配置文件中更新block_worker的url
+例如：如果您想连接到five network，则设置：
+
+        block_worker: https://five.devnet-0chain.net/dns
+3. 编辑docker.local/p0docker-compose.yml文件，并根据您的域名对命令行中的< localhost >进行替换
+
+4. 进入blobber1目录(git/blobber/docker.local/blobber1)，并通过以下命令运行容器：
+
+        $ ../bin/p0blobber.start.sh
+
+此操作将会把blobber1加入到网络中。您可以重复第4步操作加入其它的blobber。
 
 
-$ ./docker.local/bin/blobber.init.setup.sh
+# Configuring Https
+备注：如果您已经在nginx/haproxy中配置了ssl，则可以忽略此步骤。只需要在配置文件中添加路径并重启服务。
 
-Building and Starting the Nodes
-Setup a network called testnet0 for each of these node containers to talk to each other.
-$ docker network create --driver=bridge --subnet=198.18.0.0/15 --gateway=198.18.0.255 testnet0
-Update block_worker url you give in the config/0chain_blobber/validator.yaml and config/0chain_blobber/0chain_blobber.yaml config file.
-For example: If you want to connect to five network, set
+1. 在blobber的repo中进入https目录
+        
+        cd /blobber/https
+2. 编辑docker-compose.yml文件，并根据您的时机邮件和域名替换<your_email>, <your_domain>。请确保根据域名供应商情况为您的域名和IP地址添加A类型的记录。 
 
-block_worker: https://five.devnet-0chain.net/dns
-Edit docker.local/p0docker-compose.yml and replace < localhost > in command with your domain.
+3. 用以下命令部署nginx和certbot
 
-Go to blobber1 directory (git/blobber/docker.local/blobber1) and run the container using:
-
-
-$ ../bin/p0blobber.start.sh
-
-
-This will join blobber1 to the network. You can repeat step 4 for other blobbers to join them to the network.
-
-Configuring Https
-Note: You can skip this step if you have nginx/haproxy already setup with ssl in place. Just add paths in the config file and restart the service.
-
-Go to https directory in blobber repo.
-cd /blobber/https
-Edit docker-compose.yml and replace <your_email>, <your_domain> with your email and domain. Make sure to add 'A' type record for your domain and ip address with your domain provider.
-
-Deploy nginx and certbot using the following command
-
-docker-compose up -d
-Check certbot logs and see if certificate is generated. You will find "Congratulations! Your certificate and chain have been saved at: /etc/letsencrypt/live/<your_domain>/fullchain.pem" in the logs if the certificate is generated properly.
+        docker-compose up -d
+4. Check certbot logs and see if certificate is generated. You will find "Congratulations! Your certificate and chain have been saved at: /etc/letsencrypt/live/<your_domain>/fullchain.pem" in the logs if the certificate is generated properly.
 docker logs -f https_certbot_1 
 Edit /conf.d/nginx.conf to uncomment required locations in config for port 80. Uncomment all lines in server config for port 443 and comment locations which are not required. Don't forget to reploce <your_domain> with your domain.
 
